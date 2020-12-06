@@ -2,18 +2,23 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	"github.com/wepkg/union-meituan"
+	"github.com/wepkg/union-meituan/types"
 )
 
 func main() {
-	client, err := union.New("www.baidu.com", &union.Options{
-		// Creds:  credentials.NewStatic("YOUR-ACCESSKEYID", "YOUR-SECRETACCESSKEY", ""),
-		Secure: true,
-	})
+	client, err := union.New(nil)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	client.Test(context.Background())
+	params := types.OrderListReq{
+		Ts:   "123123",
+		Type: "1",
+		
+	}
+	ret, err := client.GetOrderList(context.TODO(), params)
+	fmt.Println(ret, err)
 }
