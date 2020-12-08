@@ -30,23 +30,22 @@ func decodeToResp(resp *http.Response, result interface{}) error {
 }
 
 // GetOrderList 订单列表
-func (c *Client) GetOrderList(ctx context.Context, params types.OrderListReq) (*types.OrderListResp, error) {
+func (c *Client) GetOrderList(ctx context.Context, in *types.OrderListReq) (*types.OrderListResp, error) {
 	query := url.Values{}
-	query.Add("ts", params.Ts)
-	query.Add("type", params.Type)
-	query.Add("startTime", params.StartTime)
-	query.Add("endTime", params.EndTime)
-	query.Add("page", params.Page)
-	query.Add("limit", params.Limit)
-	query.Add("queryTimeType", params.QueryTimeType)
+	query.Add("ts", in.Ts)
+	query.Add("type", in.Type)
+	query.Add("startTime", in.StartTime)
+	query.Add("endTime", in.EndTime)
+	query.Add("page", in.Page)
+	query.Add("limit", in.Limit)
+	query.Add("queryTimeType", in.QueryTimeType)
 	resp, err := c.get(ctx, c.endpointBase, APIOrderList, query)
 	if err != nil {
 		return nil, err
 	}
 	defer closeResponse(resp)
-	fmt.Println(resp)
-	result := &types.OrderListResp{}
-	return result, decodeToResp(resp, result)
+	out := &types.OrderListResp{}
+	return out, decodeToResp(resp, out)
 }
 
 // RtNotify 订单列表

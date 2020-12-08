@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"log"
 	"strconv"
@@ -12,8 +13,13 @@ import (
 )
 
 func main() {
-	client, err := union.New(&union.TokenAuth{
-		Token: "7405cd574aa31c2ddc6bad5113697a93",
+	Appkey := flag.String("appkey", "", "Appkey")
+	Secret := flag.String("secret", "", "Secret")
+	flag.Parse()
+
+	client, err := union.New(union.Auth{
+		Appkey: *Appkey,
+		Secret: *Secret,
 	})
 	if err != nil {
 		log.Fatalln(err)
@@ -22,7 +28,7 @@ func main() {
 	st, _ := time.Parse(timeLayout, "2020-11-01 00:00:00")
 	et, _ := time.Parse(timeLayout, "2020-12-31 00:00:00")
 	fmt.Println(time.Now().Format(timeLayout))
-	params := types.OrderListReq{
+	params := &types.OrderListReq{
 		Ts:            strconv.FormatInt(time.Now().Unix(), 10),
 		Type:          "4",
 		StartTime:     strconv.FormatInt(st.Unix(), 10),
@@ -31,9 +37,9 @@ func main() {
 		Limit:         "100",
 		QueryTimeType: "1",
 	}
-	r1, err := client.GetOrderList(context.TODO(), params)
-	fmt.Println(r1, err)
+	resp, err := client.GetOrderList(context.TODO(), params)
+	fmt.Println(resp.DataList[0], err)
 
-	r2, err := client.RtNotify(context.TODO())
-	fmt.Println(r2, err)
+	// r2, err := client.RtNotify(context.TODO())
+	// fmt.Println(r2, err)
 }

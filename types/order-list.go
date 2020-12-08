@@ -13,12 +13,12 @@ type OrderListReq struct {
 
 // OrderListResp ..
 type OrderListResp struct {
-	OrderList
-	Total int64
+	DataList []Order `json:"dataList"`
+	Total    int64   `json:"total"`
 }
 
-// OrderList ..
-type OrderList struct {
+// Order ..
+type Order struct {
 	OrderId      string `json:"orderid"`      // 订单id	是
 	PayTime      string `json:"paytime"`      // 订单支付时间，10位时间戳	是
 	PayPrice     string `json:"payprice"`     // 订单用户实际支付金额	是

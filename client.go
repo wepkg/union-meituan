@@ -11,7 +11,6 @@ import (
 	"net/url"
 	"path"
 	"sort"
-	"strings"
 )
 
 // APIEndpoint constants
@@ -21,41 +20,36 @@ const (
 )
 
 // Auth ..
-type Auth interface {
-	GetToken() (string, string)
-	Sign(params url.Values) (string, string)
+// type Auth interface {
+// 	GetAppkey() (string, string)
+// 	Sign(params url.Values) (string, string)
+// }
+
+//Auth ..
+type Auth struct {
+	Appkey string
+	Secret string
 }
 
-//TokenAuth ..
-type TokenAuth struct {
-	Token string
-}
-
-//GetToken ..
-func (t TokenAuth) GetToken() (string, string) {
-	return "key", t.Token
-}
-
-//Sign ..
-func (t TokenAuth) Sign(params url.Values) (string, string) {
-	var str string
+//sign ..
+func sign(auth Auth, params url.Values) string {
 	keys := make([]string, 0, len(params))
 	for k := range params {
 		keys = append(keys, k)
 	}
 	sort.Strings(keys)
+	str := auth.Secret
 	for _, k := range keys {
 		str += k + params.Get(k)
 	}
-	str += t.Token
-	fmt.Println(str)
-	return "sign", makeMd5(str)
+	str += auth.Secret
+	return makeMd5(str)
 }
 func makeMd5(str string) string {
 	h := md5.New()
 	h.Write([]byte(str))
 	cipherStr := h.Sum(nil)
-	return strings.ToUpper(hex.EncodeToString(cipherStr))
+	return hex.EncodeToString(cipherStr)
 }
 
 // Client type
@@ -127,7 +121,6 @@ func (client *Client) do(ctx context.Context, req *http.Request) (*http.Response
 		req = req.WithContext(ctx)
 	}
 	return client.httpClient.Do(req)
-
 }
 
 func (client *Client) get(ctx context.Context, base *url.URL, endpoint string, query url.Values) (*http.Response, error) {
@@ -135,12 +128,10 @@ func (client *Client) get(ctx context.Context, base *url.URL, endpoint string, q
 	if err != nil {
 		return nil, err
 	}
-	if query != nil {
-		query.Add(client.auth.GetToken())
-		query.Add(client.auth.Sign(query))
-		req.URL.RawQuery = query.Encode()
-	}
-	fmt.Println(req.URL)
+	query.Add("key", client.auth.Appkey)
+	query.Add("sign", sign(client.auth, query))
+	req.URL.RawQuery = query.Encode()
+	fmt.Println(req.URL.RawQuery)
 	return client.do(ctx, req)
 }
 
