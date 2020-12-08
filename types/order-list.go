@@ -31,3 +31,7 @@ type OrderList struct {
 	RefundProfit string `json:"refundprofit"` // 订单需要扣除的返佣金额，外卖、话费、闪购订单若发生退款会返回该字段	否
 	Status       int64  `json:"status"`       // 订单状态，外卖、话费、闪购订单会返回该字段 1 已付款 8 已完成 9 已退款或风控 否
 }
+
+// RtNotifyResp ..
+type RtNotifyResp struct {
+}

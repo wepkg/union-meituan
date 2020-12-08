@@ -4,11 +4,14 @@ import (
 	"context"
 	"crypto/md5"
 	"encoding/hex"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"path"
+	"sort"
+	"strings"
 )
 
 // APIEndpoint constants
@@ -18,12 +21,46 @@ const (
 )
 
 // Auth ..
-type Auth interface{}
+type Auth interface {
+	GetToken() (string, string)
+	Sign(params url.Values) (string, string)
+}
+
+//TokenAuth ..
+type TokenAuth struct {
+	Token string
+}
+
+//GetToken ..
+func (t TokenAuth) GetToken() (string, string) {
+	return "key", t.Token
+}
+
+//Sign ..
+func (t TokenAuth) Sign(params url.Values) (string, string) {
+	var str string
+	keys := make([]string, 0, len(params))
+	for k := range params {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	for _, k := range keys {
+		str += k + params.Get(k)
+	}
+	str += t.Token
+	fmt.Println(str)
+	return "sign", makeMd5(str)
+}
+func makeMd5(str string) string {
+	h := md5.New()
+	h.Write([]byte(str))
+	cipherStr := h.Sum(nil)
+	return strings.ToUpper(hex.EncodeToString(cipherStr))
+}
 
 // Client type
 type Client struct {
 	auth         Auth
-	signer       func(auth Auth, vals url.Values) string
 	endpointBase *url.URL     // default APIEndpointBase
 	httpClient   *http.Client // default http.DefaultClient
 	retryKeyID   string       // X-Retry-Key allows you to safely retry API requests without duplicating messages
@@ -51,7 +88,6 @@ func New(auth Auth, options ...ClientOption) (*Client, error) {
 		}
 		c.endpointBase = u
 	}
-	c.signer = makeSign
 	return c, nil
 }
 
@@ -100,12 +136,11 @@ func (client *Client) get(ctx context.Context, base *url.URL, endpoint string, q
 		return nil, err
 	}
 	if query != nil {
-		// signer
-		if client.signer != nil {
-			query.Add("sign", client.signer(client.auth, query))
-		}
+		query.Add(client.auth.GetToken())
+		query.Add(client.auth.Sign(query))
 		req.URL.RawQuery = query.Encode()
 	}
+	fmt.Println(req.URL)
 	return client.do(ctx, req)
 }
 
@@ -152,15 +187,4 @@ func closeResponse(res *http.Response) error {
 	defer res.Body.Close()
 	_, err := io.Copy(ioutil.Discard, res.Body)
 	return err
-}
-
-func makeSign(auth Auth, vals url.Values) string {
-	var str string
-	for k, v := range vals {
-		str += k + v[0]
-	}
-	encoder := md5.New()
-	encoder.Write([]byte(str))
-	encodeBytes := encoder.Sum(nil)
-	return hex.EncodeToString(encodeBytes)
 }
