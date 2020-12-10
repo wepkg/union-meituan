@@ -1,6 +1,7 @@
 package union
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -16,22 +17,28 @@ func (e APIError) Error() string {
 	return fmt.Sprintf("APIError: %v [%v]", e.Errmsg, e.Errno)
 }
 
-func checkResponse(resp *http.Response) error {
-	if resp.StatusCode/100 == 2 { //2xx
-		return nil
+// decodeToOrderListResp ..
+func decodeToResp(resp *http.Response, result interface{}) error {
+	if resp.StatusCode/100 != 2 { //2xx
+		// decoder := json.NewDecoder(resp.Body)
+		// if err := decoder.Decode(&result); err != nil {
+		// 	return &APIError{
+		// 		Code: resp.StatusCode,
+		// 	}
+		// }
+		content, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return err
+		}
+		return &APIError{
+			Errno:  resp.StatusCode,
+			Errmsg: string(content),
+		}
 	}
-	// decoder := json.NewDecoder(resp.Body)
-	// if err := decoder.Decode(&result); err != nil {
-	// 	return &APIError{
-	// 		Code: resp.StatusCode,
-	// 	}
-	// }
-	content, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
+	fmt.Println(ioutil.ReadAll(resp.Body))
+	decoder := json.NewDecoder(resp.Body)
+	if err := decoder.Decode(result); err != nil {
 		return err
 	}
-	return &APIError{
-		Errno:  resp.StatusCode,
-		Errmsg: string(content),
-	}
+	return nil
 }

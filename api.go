@@ -2,9 +2,7 @@ package union
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"net/http"
 	"net/url"
 
 	"github.com/wepkg/union-meituan/types"
@@ -16,18 +14,6 @@ const (
 	// APIRtNotify 单个订单查询接口(旧)
 	APIRtNotify = "/api/rtnotify"
 )
-
-// decodeToOrderListResp ..
-func decodeToResp(resp *http.Response, result interface{}) error {
-	if err := checkResponse(resp); err != nil {
-		return err
-	}
-	decoder := json.NewDecoder(resp.Body)
-	if err := decoder.Decode(result); err != nil {
-		return err
-	}
-	return nil
-}
 
 // GetOrderList 订单列表
 func (c *Client) GetOrderList(ctx context.Context, in *types.OrderListReq) (*types.OrderListResp, error) {

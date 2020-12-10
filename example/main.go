@@ -27,7 +27,6 @@ func main() {
 	timeLayout := "2006-01-02 15:04:05"
 	st, _ := time.Parse(timeLayout, "2020-11-01 00:00:00")
 	et, _ := time.Parse(timeLayout, "2020-12-31 00:00:00")
-	fmt.Println(time.Now().Format(timeLayout))
 	params := &types.OrderListReq{
 		Ts:            strconv.FormatInt(time.Now().Unix(), 10),
 		Type:          "4",
@@ -38,7 +37,9 @@ func main() {
 		QueryTimeType: "1",
 	}
 	resp, err := client.GetOrderList(context.TODO(), params)
-	fmt.Println(resp.DataList[0], err)
+	fmt.Println(err)
+	fmt.Println(resp)
+	// fmt.Println(resp.DataList[0], err)
 
 	// r2, err := client.RtNotify(context.TODO())
 	// fmt.Println(r2, err)
