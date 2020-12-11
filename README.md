@@ -25,7 +25,7 @@ import "github.com/wepkg/union-meituan"
 ```
 
 ### 查询订单列表
-```
+```golang
 params := &types.OrderListReq{
     Type:          "4",
     StartTime:     strconv.FormatInt(st.Unix(), 10),
@@ -42,7 +42,7 @@ fmt.Printf("%+v", resp.DataList)
 ```
 ### 查询单个订单
 
-```
+```golang
 params := &types.OrderReq{
     Oid: "1000000001",
     Type:          "4",
@@ -56,7 +56,7 @@ fmt.Printf("%+v", resp)
 
 ### 领券结果查询
 
-```
+```golang
 params := &types.OrderReq{
     Oid: "1000000001",
     Type:          "4",
