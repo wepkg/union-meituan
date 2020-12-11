@@ -3,7 +3,6 @@ package union
 import (
 	"fmt"
 	"net/url"
-	"path"
 )
 
 // NewActivity origURL 为美团活动原始url
@@ -19,8 +18,9 @@ type Activity struct {
 // BuildH5URL ..
 func (a Activity) BuildH5URL(appkey, sid string) string {
 	jumpBase := "https://runion.meituan.com/url?key=%v&url=%v&sid=%v"
-	val := fmt.Sprintf("%v:%v", appkey, sid)
-	strURL := path.Join(a.OriginalURL, "appkey=", val)
+	origURL, _ := url.Parse(a.OriginalURL)
+	origURL.RawQuery = origURL.RawQuery + fmt.Sprintf("appkey=%v:%v", appkey, sid)
+	strURL := origURL.String()
 	escapeURL := url.QueryEscape(strURL)
 	jumpURL := fmt.Sprintf(jumpBase, appkey, escapeURL, sid)
 	return jumpURL
