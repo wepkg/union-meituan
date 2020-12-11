@@ -4,7 +4,9 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"log"
+	"net/http"
 	"strconv"
 	"time"
 
@@ -63,4 +65,10 @@ func main() {
 	}
 	r3, err := client.GetCouponList(context.TODO(), p3)
 	fmt.Println(r3, err)
+
+	http.HandleFunc("/notify", func(w http.ResponseWriter, r *http.Request) {
+		body, _ := ioutil.ReadAll(r.Body)
+		fmt.Println(string(body))
+	})
+	http.ListenAndServe(":8080", nil)
 }
