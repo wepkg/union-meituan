@@ -99,5 +99,5 @@ func (c *Client) CallbackOrder(ctx context.Context) (*types.CallbackOrder, error
 	// if err := decoder.Decode(result); err != nil {
 	// 	return err
 	// }
-	return out, decodeToResp(resp, out)
+	return out, nil
 }
