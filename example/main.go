@@ -17,7 +17,7 @@ func main() {
 	Secret := flag.String("secret", "", "Secret")
 	flag.Parse()
 
-	client, err := union.New(union.Auth{
+	client, err := union.New(&union.Auth{
 		Appkey: *Appkey,
 		Secret: *Secret,
 	})
@@ -27,8 +27,8 @@ func main() {
 	timeLayout := "2006-01-02 15:04:05"
 	st, _ := time.Parse(timeLayout, "2020-11-01 00:00:00")
 	et, _ := time.Parse(timeLayout, "2020-12-31 00:00:00")
+
 	params := &types.OrderListReq{
-		Ts:            strconv.FormatInt(time.Now().Unix(), 10),
 		Type:          "4",
 		StartTime:     strconv.FormatInt(st.Unix(), 10),
 		EndTime:       strconv.FormatInt(et.Unix(), 10),
@@ -37,10 +37,19 @@ func main() {
 		QueryTimeType: "1",
 	}
 	resp, err := client.GetOrderList(context.TODO(), params)
-	fmt.Println(err)
-	fmt.Println(resp)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Printf("%+v", resp.DataList[0])
+
 	// fmt.Println(resp.DataList[0], err)
 
-	// r2, err := client.RtNotify(context.TODO())
-	// fmt.Println(r2, err)
+	p2 := &types.RtNotifyReq{
+		Oid:  "4374293237780870",
+		Full: true,
+		Type: "4",
+	}
+	var r2 *types.RtNotifyResp
+	err = client.RtNotify(context.TODO(), p2, r2)
+	fmt.Println(r2, err)
 }

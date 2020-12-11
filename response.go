@@ -35,7 +35,12 @@ func decodeToResp(resp *http.Response, result interface{}) error {
 			Errmsg: string(content),
 		}
 	}
-	fmt.Println(ioutil.ReadAll(resp.Body))
+	if resp.ContentLength == 0 {
+		return &APIError{
+			Errno:  resp.StatusCode,
+			Errmsg: "Content Empty",
+		}
+	}
 	decoder := json.NewDecoder(resp.Body)
 	if err := decoder.Decode(result); err != nil {
 		return err

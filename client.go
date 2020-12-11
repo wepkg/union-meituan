@@ -4,13 +4,14 @@ import (
 	"context"
 	"crypto/md5"
 	"encoding/hex"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"path"
 	"sort"
+	"strconv"
+	"time"
 )
 
 // APIEndpoint constants
@@ -32,7 +33,7 @@ type Auth struct {
 }
 
 //sign ..
-func sign(auth Auth, params url.Values) string {
+func sign(auth *Auth, params url.Values) string {
 	keys := make([]string, 0, len(params))
 	for k := range params {
 		keys = append(keys, k)
@@ -54,7 +55,7 @@ func makeMd5(str string) string {
 
 // Client type
 type Client struct {
-	auth         Auth
+	auth         *Auth
 	endpointBase *url.URL     // default APIEndpointBase
 	httpClient   *http.Client // default http.DefaultClient
 	retryKeyID   string       // X-Retry-Key allows you to safely retry API requests without duplicating messages
@@ -64,7 +65,7 @@ type Client struct {
 type ClientOption func(*Client) error
 
 // New returns a new bot client instance.
-func New(auth Auth, options ...ClientOption) (*Client, error) {
+func New(auth *Auth, options ...ClientOption) (*Client, error) {
 	c := &Client{
 		auth:       auth,
 		httpClient: http.DefaultClient,
@@ -128,10 +129,12 @@ func (client *Client) get(ctx context.Context, base *url.URL, endpoint string, q
 	if err != nil {
 		return nil, err
 	}
-	query.Add("key", client.auth.Appkey)
-	query.Add("sign", sign(client.auth, query))
+	query.Add("ts", strconv.FormatInt(time.Now().Unix(), 10))
+	if client.auth != nil {
+		query.Add("key", client.auth.Appkey)
+		query.Add("sign", sign(client.auth, query))
+	}
 	req.URL.RawQuery = query.Encode()
-	fmt.Println(req.URL.RawQuery)
 	return client.do(ctx, req)
 }
 
