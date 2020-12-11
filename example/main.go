@@ -52,4 +52,15 @@ func main() {
 	var r2 *types.RtNotifyResp
 	err = client.RtNotify(context.TODO(), p2, r2)
 	fmt.Println(r2, err)
+
+	p3 := &types.CouponListReq{
+		Type:      "4",
+		StartTime: "",
+		EndTime:   "",
+		Page:      "",
+		Limit:     "",
+		Sid:       "",
+	}
+	r3, err := client.GetCouponList(context.TODO(), p3)
+	fmt.Println(r3, err)
 }

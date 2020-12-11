@@ -26,44 +26,44 @@ import "github.com/wepkg/union-meituan"
 
 ### 查询订单列表
 ```
-    params := &types.OrderListReq{
-		Type:          "4",
-		StartTime:     strconv.FormatInt(st.Unix(), 10),
-		EndTime:       strconv.FormatInt(et.Unix(), 10),
-		Page:          "1",
-		Limit:         "100",
-		QueryTimeType: "1",
-	}
-	resp, err := client.GetOrderList(context.TODO(), params)
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Printf("%+v", resp.DataList)
+params := &types.OrderListReq{
+    Type:          "4",
+    StartTime:     strconv.FormatInt(st.Unix(), 10),
+    EndTime:       strconv.FormatInt(et.Unix(), 10),
+    Page:          "1",
+    Limit:         "100",
+    QueryTimeType: "1",
+}
+resp, err := client.GetOrderList(context.TODO(), params)
+if err != nil {
+    fmt.Println(err)
+}
+fmt.Printf("%+v", resp.DataList)
 ```
 ### 查询单个订单
 
 ```
-    params := &types.OrderReq{
-        Oid: "1000000001",
-		Type:          "4",
-	}
-	resp, err := client.GetOrder(context.TODO(), params)
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Printf("%+v", resp)
+params := &types.OrderReq{
+    Oid: "1000000001",
+    Type:          "4",
+}
+resp, err := client.GetOrder(context.TODO(), params)
+if err != nil {
+    fmt.Println(err)
+}
+fmt.Printf("%+v", resp)
 ```
 
 ### 领券结果查询
 
 ```
-    params := &types.OrderReq{
-        Oid: "1000000001",
-		Type:          "4",
-	}
-	resp, err := client.GetOrder(context.TODO(), params)
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Printf("%+v", resp)
+params := &types.OrderReq{
+    Oid: "1000000001",
+    Type:          "4",
+}
+resp, err := client.GetOrder(context.TODO(), params)
+if err != nil {
+    fmt.Println(err)
+}
+fmt.Printf("%+v", resp)
 ```
