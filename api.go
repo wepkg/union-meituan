@@ -3,6 +3,7 @@ package union
 import (
 	"context"
 	"net/url"
+	"strconv"
 
 	"github.com/wepkg/union-meituan/types"
 )
@@ -14,6 +15,8 @@ const (
 	APIRtNotify = "/api/rtnotify"
 	// APICouponList
 	APICouponList = "/api/couponList"
+	//APIGenerateLink
+	APIGenerateLink = "/generateLink"
 )
 
 // GetOrderList 订单列表
@@ -58,6 +61,7 @@ func (c *Client) RtNotify(ctx context.Context, in *types.RtNotifyReq, out interf
 	} else {
 		query.Add("full", "0")
 	}
+	query.Add("sid", in.Sid)
 	query.Add("type", in.Type)
 	resp, err := c.get(ctx, c.endpointBase, APIRtNotify, query)
 	if err != nil {
@@ -78,7 +82,7 @@ func (c *Client) GetCouponList(ctx context.Context, in *types.CouponListReq) (*t
 	query.Add("page", in.Page)
 	query.Add("limit", in.Limit)
 	query.Add("sid", in.Sid)
-	resp, err := c.get(ctx, c.endpointBase, APIRtNotify, query)
+	resp, err := c.get(ctx, c.endpointBase, APICouponList, query)
 	if err != nil {
 		return nil, err
 	}
@@ -87,6 +91,25 @@ func (c *Client) GetCouponList(ctx context.Context, in *types.CouponListReq) (*t
 	// fmt.Println(string(body))
 	out := &types.CouponListResp{}
 	return out, decodeToResp(resp, out)
+}
+func (c *Client) GenerateLink(ctx context.Context, in *types.GenerateLinkReq) (*types.GenerateLinkResp, error) {
+	query := url.Values{}
+	query.Add("actId", strconv.FormatInt(in.ActID, 10))
+	query.Add("sid", in.Sid)
+	query.Add("linkType", strconv.Itoa(in.LinkType))
+	resp, err := c.get(ctx, c.endpointBase, APIGenerateLink, query)
+	if err != nil {
+		return nil, err
+	}
+	defer closeResponse(resp)
+	out := &types.GenerateLinkResp{}
+	if err := decodeToResp(resp, out); err != nil {
+		return out, err
+	}
+	if out.Status != 0 {
+		return out, APIError{Errno: 400, Errmsg: out.Des}
+	}
+	return out, nil
 }
 
 // CallbackOrder 订单回推接口

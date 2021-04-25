@@ -1,6 +1,8 @@
 package types
 
-import "time"
+import (
+	"time"
+)
 
 // OrderType ..
 type OrderType string
@@ -163,4 +165,20 @@ type CallbackOrder struct {
 	OrderTime time.Time `json:"ordertime"`
 	Ratio     string    `json:"ratio"` //订单返佣比例，cps活动的订单会返回该字段	是
 	Sign      string    `json:"sign"`
+}
+
+const LinkTypeH5 = 1       //h5链接
+const LinkTypeDeepLink = 2 //deeplink(唤起)链接
+const LinkTypeJump = 3     //中间页唤起链接
+const LinkTypeWxa = 4      //微信小程序唤起路径
+
+type GenerateLinkReq struct {
+	ActID    int64  `json:"actId"`
+	Sid      string `json:"sid"`
+	LinkType int    `json:"linkType"`
+}
+type GenerateLinkResp struct {
+	Status int    `json:"status"`
+	Des    string `json:"des"`
+	Data   string `json:"data"`
 }

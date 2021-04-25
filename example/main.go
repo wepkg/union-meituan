@@ -4,9 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
-	"net/http"
 	"strconv"
 	"time"
 
@@ -48,6 +46,7 @@ func main() {
 
 	p2 := &types.RtNotifyReq{
 		Oid:  "4374293237780870",
+		Sid:  "test",
 		Full: true,
 		Type: "4",
 	}
@@ -59,16 +58,24 @@ func main() {
 		Type:      "4",
 		StartTime: "",
 		EndTime:   "",
-		Page:      "",
-		Limit:     "",
-		Sid:       "",
+		Page:      "1",
+		Limit:     "1",
+		Sid:       "test",
 	}
 	r3, err := client.GetCouponList(context.TODO(), p3)
 	fmt.Println(r3, err)
 
-	http.HandleFunc("/notify", func(w http.ResponseWriter, r *http.Request) {
-		body, _ := ioutil.ReadAll(r.Body)
-		fmt.Println(string(body))
-	})
-	http.ListenAndServe(":8080", nil)
+	p4 := &types.GenerateLinkReq{
+		ActID:    2,
+		Sid:      "union_skd_test",
+		LinkType: types.LinkTypeWxa,
+	}
+	r4, err := client.GenerateLink(context.TODO(), p4)
+	fmt.Println(r4, err)
+
+	// http.HandleFunc("/notify", func(w http.ResponseWriter, r *http.Request) {
+	// 	body, _ := ioutil.ReadAll(r.Body)
+	// 	fmt.Println(string(body))
+	// })
+	// http.ListenAndServe(":8080", nil)
 }
