@@ -92,11 +92,18 @@ func (c *Client) GetCouponList(ctx context.Context, in *types.CouponListReq) (*t
 	out := &types.CouponListResp{}
 	return out, decodeToResp(resp, out)
 }
-func (c *Client) GenerateLink(ctx context.Context, in *types.GenerateLinkReq) (*types.GenerateLinkResp, error) {
+
+const LinkTypeH5 int = 1       //h5链接
+const LinkTypeDeepLink int = 2 //deeplink(唤起)链接
+const LinkTypeJump int = 3     //中间页唤起链接
+const LinkTypeWxa int = 4      //微信小程序唤起路径
+
+// GenerateLink 生成连接
+func (c *Client) GenerateLink(ctx context.Context, linkType, actID int, sid string) (*types.GenerateLinkResp, error) {
 	query := url.Values{}
-	query.Add("actId", strconv.FormatInt(in.ActID, 10))
-	query.Add("sid", in.Sid)
-	query.Add("linkType", strconv.Itoa(in.LinkType))
+	query.Add("actId", strconv.Itoa(actID))
+	query.Add("sid", sid)
+	query.Add("linkType", strconv.Itoa(linkType))
 	resp, err := c.get(ctx, c.endpointBase, APIGenerateLink, query)
 	if err != nil {
 		return nil, err

@@ -167,16 +167,6 @@ type CallbackOrder struct {
 	Sign      string    `json:"sign"`
 }
 
-const LinkTypeH5 = 1       //h5链接
-const LinkTypeDeepLink = 2 //deeplink(唤起)链接
-const LinkTypeJump = 3     //中间页唤起链接
-const LinkTypeWxa = 4      //微信小程序唤起路径
-
-type GenerateLinkReq struct {
-	ActID    int64  `json:"actId"`
-	Sid      string `json:"sid"`
-	LinkType int    `json:"linkType"`
-}
 type GenerateLinkResp struct {
 	Status int    `json:"status"`
 	Des    string `json:"des"`
