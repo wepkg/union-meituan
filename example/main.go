@@ -65,12 +65,7 @@ func main() {
 	r3, err := client.GetCouponList(context.TODO(), p3)
 	fmt.Println(r3, err)
 
-	p4 := &types.GenerateLinkReq{
-		ActID:    2,
-		Sid:      "union_skd_test",
-		LinkType: types.LinkTypeWxa,
-	}
-	r4, err := client.GenerateLink(context.TODO(), p4)
+	r4, err := client.GenerateLink(context.TODO(), union.LinkTypeWxa, 2, "union_skd_test")
 	fmt.Println(r4, err)
 
 	// http.HandleFunc("/notify", func(w http.ResponseWriter, r *http.Request) {

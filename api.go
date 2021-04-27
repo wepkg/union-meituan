@@ -99,24 +99,29 @@ const LinkTypeJump int = 3     //中间页唤起链接
 const LinkTypeWxa int = 4      //微信小程序唤起路径
 
 // GenerateLink 生成连接
-func (c *Client) GenerateLink(ctx context.Context, linkType, actID int, sid string) (*types.GenerateLinkResp, error) {
+func (c *Client) GenerateLink(ctx context.Context, linkType, actID int, sid string) (string, error) {
 	query := url.Values{}
 	query.Add("actId", strconv.Itoa(actID))
 	query.Add("sid", sid)
 	query.Add("linkType", strconv.Itoa(linkType))
 	resp, err := c.get(ctx, c.endpointBase, APIGenerateLink, query)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	defer closeResponse(resp)
-	out := &types.GenerateLinkResp{}
+	type generateLinkResp struct {
+		Status int    `json:"status"`
+		Des    string `json:"des"`
+		Data   string `json:"data"`
+	}
+	out := &generateLinkResp{}
 	if err := decodeToResp(resp, out); err != nil {
-		return out, err
+		return "", err
 	}
 	if out.Status != 0 {
-		return out, APIError{Errno: 400, Errmsg: out.Des}
+		return "", APIError{Errno: 400, Errmsg: out.Des}
 	}
-	return out, nil
+	return out.Data, nil
 }
 
 // CallbackOrder 订单回推接口
