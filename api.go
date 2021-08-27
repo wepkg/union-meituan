@@ -17,7 +17,14 @@ const (
 	APICouponList = "/api/couponList"
 	//APIGenerateLink
 	APIGenerateLink = "/generateLink"
+	//MeituanWxaAppid 美团小程序appid
+	MeituanWxaAppid = "wxde8ac0a21135c07d"
 )
+
+// GetMeituanWxaAppid 获取美团微信小程序appid
+func (c *Client) GetMeituanWxaAppid() string {
+	return MeituanWxaAppid
+}
 
 // GetOrderList 订单列表
 func (c *Client) GetOrderList(ctx context.Context, in *types.OrderListReq) (*types.OrderListResp, error) {
